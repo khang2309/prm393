@@ -1,4 +1,4 @@
-package com.example.lab4_recurring_bills
+package com.example.lab5
 
 import io.flutter.embedding.android.FlutterActivity
 
