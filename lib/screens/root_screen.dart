@@ -44,21 +44,21 @@ class _RootScreenState extends State<RootScreen> {
               child: const Icon(Icons.add),
             )
           : null,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() {
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() {
           _selectedIndex = index;
           _refreshToken++;
         }),
-        destinations: const [
-          NavigationDestination(
+        items: const [
+          BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          NavigationDestination(
+          BottomNavigationBarItem(
             icon: Icon(Icons.favorite_border),
-            selectedIcon: Icon(Icons.favorite),
+            activeIcon: Icon(Icons.favorite),
             label: 'Wishlist',
           ),
         ],

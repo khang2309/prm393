@@ -30,8 +30,12 @@ class _WishlistScreenState extends State<WishlistScreen> {
     if (widget.refreshToken != oldWidget.refreshToken) _load();
   }
 
-  void _load() =>
-      setState(() => _items = ShoppingDatabase.instance.getWishlistItems());
+  void _load() {
+    final items = ShoppingDatabase.instance.getWishlistItems();
+    setState(() {
+      _items = items;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

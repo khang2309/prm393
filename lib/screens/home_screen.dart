@@ -34,8 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (widget.refreshToken != oldWidget.refreshToken) _loadItems();
   }
 
-  void _loadItems() =>
-      setState(() => _items = ShoppingDatabase.instance.getAllItems());
+  void _loadItems() {
+    final items = ShoppingDatabase.instance.getAllItems();
+    setState(() {
+      _items = items;
+    });
+  }
 
   Future<void> _openDetail(ShoppingItem item) async {
     final result = await Navigator.of(context).push<DetailResult>(
