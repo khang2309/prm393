@@ -53,15 +53,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Confirm Delete'),
         content: Text(
-          'Delete “${_item.itemName}” permanently? This action cannot be undone.',
+          'Are you sure you want to delete "${_item.itemName}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+          TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),
@@ -90,38 +89,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.tertiary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: Column(
-                children: [
-                  const Icon(Icons.favorite, color: Colors.white, size: 44),
-                  const SizedBox(height: 10),
-                  Text(
-                    _item.itemName,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Detail Information',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
                     _DetailRow(
                       icon: Icons.key,
                       label: 'ID',
@@ -158,15 +141,27 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               children: [
                 Expanded(
                   child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF9800),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(84),
+                    ),
                     onPressed: _busy ? null : _toggleStatus,
                     icon: const Icon(Icons.sync),
-                    label: Text(_item.isWishlist ? 'Purchased' : 'Wishlist'),
+                    label: Text(
+                      _item.isWishlist ? 'Move to\nPurchased' : 'Move to\nWishlist',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton.icon(
-                    style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFC90029),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(84),
+                    ),
                     onPressed: _busy ? null : _delete,
                     icon: const Icon(Icons.delete_outline),
                     label: const Text('Delete'),
@@ -174,7 +169,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF858585),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(84),
+                    ),
                     onPressed: _busy
                         ? null
                         : () => Navigator.pop(

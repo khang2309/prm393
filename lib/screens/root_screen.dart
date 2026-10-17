@@ -22,8 +22,18 @@ class _RootScreenState extends State<RootScreen> {
         .push<String>(MaterialPageRoute(builder: (_) => const AddItemScreen()));
     if (!mounted || itemName == null) return;
     _refresh();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Added “$itemName” to your shopping items.')),
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Success'),
+        content: Text('Added "$itemName" to wishlist'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -39,12 +49,18 @@ class _RootScreenState extends State<RootScreen> {
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
+              backgroundColor: const Color(0xFF7000F5),
+              foregroundColor: Colors.white,
               onPressed: _openAddScreen,
               tooltip: 'Add shopping item',
               child: const Icon(Icons.add),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: const Color(0xFF7000F5),
+        unselectedItemColor: const Color(0xFF888888),
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() {
           _selectedIndex = index;

@@ -42,13 +42,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   Future<void> _save() async {
     FocusScope.of(context).unfocus();
-    if (!_formKey.currentState!.validate()) return;
+    if (_nameController.text.trim().isEmpty) {
+      await _showMessage('Error', 'Please enter item name');
+      return;
+    }
+    final price = _parsePrice(_priceController.text);
+    if (price == null || price <= 0) {
+      await _showMessage('Error', 'Please enter a valid price');
+      return;
+    }
     setState(() => _saving = true);
     try {
       final item = ShoppingItem(
         itemName: _nameController.text.trim(),
         category: _category,
-        price: _parsePrice(_priceController.text)!,
+        price: price,
         status: _status,
       );
       await ShoppingDatabase.instance.insert(item);
@@ -61,6 +69,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
     }
   }
 
+  Future<void> _showMessage(String title, String message) => showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,37 +91,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                'Create a favorite item',
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Add something you love or plan to buy.',
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
+              const _FieldLabel('Item Name *'),
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
-                  labelText: 'Item Name *',
-                  prefixIcon: Icon(Icons.shopping_bag_outlined),
+                  hintText: 'e.g. Nike Air Force 1',
                 ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Please enter item name'
-                    : null,
               ),
               const SizedBox(height: 16),
+              const _FieldLabel('Category *'),
               DropdownButtonFormField<String>(
                 initialValue: _category,
-                decoration: const InputDecoration(
-                  labelText: 'Category *',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
+                decoration: const InputDecoration(),
                 items: _categories
                     .map(
                       (value) =>
@@ -109,6 +115,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onChanged: (value) => setState(() => _category = value!),
               ),
               const SizedBox(height: 16),
+              const _FieldLabel('Price (VND) *'),
               TextFormField(
                 controller: _priceController,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -118,28 +125,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                 ],
                 decoration: const InputDecoration(
-                  labelText: 'Price (VND) *',
-                  prefixIcon: Icon(Icons.payments_outlined),
                   hintText: 'e.g. 2500000',
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a price';
-                  }
-                  final price = _parsePrice(value);
-                  if (price == null || price <= 0) {
-                    return 'Price must be greater than 0';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
+              const _FieldLabel('Status'),
               DropdownButtonFormField<String>(
                 initialValue: _status,
-                decoration: const InputDecoration(
-                  labelText: 'Status',
-                  prefixIcon: Icon(Icons.flag_outlined),
-                ),
+                decoration: const InputDecoration(),
                 items: const [
                   DropdownMenuItem(
                     value: ShoppingItem.wishlistStatus,
@@ -156,7 +149,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: FilledButton.icon(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
                       onPressed: _saving ? null : _save,
                       icon: _saving
                           ? const SizedBox.square(
@@ -169,7 +170,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: OutlinedButton.icon(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF858585),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
                       onPressed: _saving ? null : () => Navigator.pop(context),
                       icon: const Icon(Icons.close),
                       label: const Text('Cancel'),
@@ -183,4 +192,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
       ),
     );
   }
+}
+
+class _FieldLabel extends StatelessWidget {
+  const _FieldLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 7),
+    child: Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+    ),
+  );
 }

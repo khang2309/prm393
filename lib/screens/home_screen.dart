@@ -47,11 +47,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     if (!mounted || result == null) return;
     widget.onChanged();
-    final message = result == DetailResult.deleted
-        ? 'Item deleted successfully.'
-        : 'Item status updated successfully.';
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    if (result == DetailResult.deleted) {
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Success'),
+          content: const Text('Item deleted'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -59,33 +69,50 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Column(
         children: [
-          Semantics(
-            label: 'Favorite Shopping Items banner',
-            image: true,
-            child: SizedBox(
-              width: double.infinity,
-              height: 155,
-              child: Image.asset('assets/images/banner.png', fit: BoxFit.cover),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Favorite Shopping Items',
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
+          Stack(
+            alignment: Alignment.bottomLeft,
+            children: [
+              Semantics(
+                label: 'Shopping wishlist banner',
+                image: true,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 125,
+                  child: Image.asset(
+                    'assets/images/banner.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
-                IconButton(
-                  onPressed: _loadItems,
-                  tooltip: 'Refresh',
-                  icon: const Icon(Icons.refresh),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
+                color: const Color(0xB35A5149),
+                child: FutureBuilder<List<ShoppingItem>>(
+                  future: _items,
+                  builder: (_, snapshot) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Favorite Shopping Items',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        '${snapshot.data?.length ?? 0} items',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Expanded(
             child: FutureBuilder<List<ShoppingItem>>(
@@ -106,14 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (items.isEmpty) {
                   return const MessageState(
                     icon: Icons.shopping_cart_outlined,
-                    title: 'Your list is empty',
-                    subtitle: 'Tap + to add your first favorite shopping item.',
+                    title: 'Chưa có sản phẩm nào',
+                    subtitle: 'Nhấn nút “+” để thêm sản phẩm yêu thích',
                   );
                 }
                 return RefreshIndicator(
                   onRefresh: () async => _loadItems(),
                   child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
+                    padding: const EdgeInsets.fromLTRB(8, 10, 8, 90),
                     itemCount: items.length,
                     itemBuilder: (_, index) => ItemCard(
                       item: items[index],
@@ -152,18 +179,18 @@ class MessageState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 64, color: Colors.grey),
+            Icon(icon, size: 54, color: const Color(0xFF777777)),
             const SizedBox(height: 14),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
             if (onRetry != null)
               TextButton(onPressed: onRetry, child: const Text('Try again')),

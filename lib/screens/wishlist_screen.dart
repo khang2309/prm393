@@ -48,8 +48,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
           final total = items.fold<double>(0, (sum, item) => sum + item.price);
           return Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 22, 20, 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(top: BorderSide(color: Color(0xFF7000F5), width: 2)),
+                ),
                 child: Column(
                   children: [
                     Container(
@@ -72,7 +77,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                           ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     Text(
-                      '${items.length} ${items.length == 1 ? 'item' : 'items'} waiting for you',
+                      '${items.length} ${items.length == 1 ? 'item' : 'items'} in wishlist',
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -97,50 +102,60 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     : RefreshIndicator(
                         onRefresh: () async => _load(),
                         child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.fromLTRB(8, 10, 8, 4),
                           itemCount: items.length,
                           itemBuilder: (_, index) =>
-                              ItemCard(item: items[index]),
+                              ItemCard(
+                                item: items[index],
+                                leadingIndex: index + 1,
+                              ),
                         ),
                       ),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary
-                        .withValues(alpha: .25),
+                    color: Colors.orange,
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.calculate, color: Color(0xFF7000F5), size: 20),
+                        SizedBox(width: 8),
+                        Text('Total Estimate', style: TextStyle(fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        const Text('Number of items:', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const Spacer(),
+                        Text('${items.length}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Text('Total cost:', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const Spacer(),
+                        Text(formatVnd(total), style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w900, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.calculate_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Total estimated cost',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Text(
-                      formatVnd(total),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 17,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(9),
+                      color: const Color(0xFFF3F3F3),
+                      child: const Text(
+                        '●  This is the estimated total for items you want to buy',
+                        style: TextStyle(color: Colors.grey, fontSize: 10),
                       ),
                     ),
                   ],
