@@ -1,11 +1,11 @@
 {
-    "name": "lab4_recurring_bills",
-    "short_name": "lab4_recurring_bills",
+    "name": "Computer Store System",
+    "short_name": "ComputerStoreSys",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Computer Store Management System",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
